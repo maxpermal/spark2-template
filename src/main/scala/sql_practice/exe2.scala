@@ -22,7 +22,7 @@ object exe2 {
       .csv("data/input/sample_08")
       .select(
         $"_c0".as("code"),
-        $"_c1".as("description"),
+        $"_c1".as("description08"),
         $"_c2".as("total_emp08"),
         $"_c3".as("salary08"))
 
@@ -30,22 +30,31 @@ object exe2 {
     val salaries07_08 = salaries07.join(salaries08b, Seq("code") )
 
     //question 2
-    val salaries07_GT_100 = salaries07.select($"description",$"salary07").filter($"salary07">100000)
+    val salaries07_GT_100 = salaries07
+      .select($"description",$"salary07")
+      .filter($"salary07">100000)
     salaries07_GT_100.show
 
     //question3
-    val salaries07_08_growth = salaries07_08.
-      select($"description",$"salary07",$"salary08",
-        ( ($"salary08"-$"salary07")/($"salary07") *100).as("growth") )
-      .orderBy($"growth".desc)
+    val salaries07_08_growth = salaries07_08
+      .select(
+        $"description",
+        $"salary07",
+        $"salary08",
+        ( ($"salary08"-$"salary07")/($"salary07") *100).as("growth_percent") )
+      .orderBy($"growth_percent".desc)
+      .filter($"growth_percent">0)
     salaries07_08_growth.show
 
     //question 4
-    val salaries07_08_jobloss = salaries07_08.
-      select($"description",$"total_emp07",$"total_emp08",
-        ( ($"total_emp08"-$"total_emp07")/($"total_emp07") *100).as("jobloss") )
-      .orderBy($"jobloss".desc)
-      .filter($"jobloss"<0)
+    val salaries07_08_jobloss = salaries07_08
+      .select(
+        $"description",
+        $"total_emp07",
+        $"total_emp08",
+        ( ($"total_emp08"-$"total_emp07")/($"total_emp07") *100).as("jobloss_percent") )
+      .orderBy($"jobloss_percent".asc)
+      .filter($"jobloss_percent"<0)
     salaries07_08_jobloss.show
   }
 }
